@@ -1,3 +1,4 @@
+cosign.key
 # Build/test artifacts
 *.build
 *.log
