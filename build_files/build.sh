@@ -166,8 +166,8 @@ stage_install_base() {
   dnf5 -y --setopt=install_weak_deps=False install "${FEDORA_PACKAGES[@]}"
 
   # ly (display manager on tty1) comes from the official Fedora repository
-  systemctl enable ly@tty1.service
-  systemctl mask getty@tty1.service
+  systemctl enable ly@tty2.service
+  systemctl mask getty@tty2.service
 }
 
 stage_install_hyprland() {
