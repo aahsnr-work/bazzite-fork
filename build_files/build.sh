@@ -26,75 +26,75 @@ PRIORITY_COPR=98
 # ---------------------------------------------------------------------------
 # Package lists (mirroring the attached recipe.yml, install-weak-deps off)
 # ---------------------------------------------------------------------------
-read -r -a FEDORA_PACKAGES <<'EOF'
-accountsservice
-bleachbit
-bluez-tools
-brightnessctl
-cargo
-chezmoi
-cmake
-cronie
-curl
-ddcutil
-direnv
-distrobox
-emacs-pgtk
-fail2ban
-file-roller
-fontconfig
-fonts-filesystem
-gcc-c++
-git
-gnome-keyring
-gnome-tweaks
-go
-grim
-gsettings-desktop-schemas
-gtk4-layer-shell
-gzip
-ImageMagick
-imv
-inotify-tools
-jq
-kitty
-kitty-shell-integration
-kitty-terminfo
-libinput-utils
-logrotate
-ly
-lynis
-man-db
-mpv
-neovim
-ninja-build
-nodejs
-npm
-papers
-papirus-icon-theme
-pipx
-pkgconf-pkg-config
-policycoreutils-python-utils
-pymol
-qt5ct
-slurp
-sqlite
-swappy
-transmission-gtk
-tree-sitter-cli
-udiskie
-xdg-desktop-portal
-xdg-user-dirs
-xdg-user-dirs-gtk
-xhost
-xorg-x11-server-Xorg
-xorg-x11-server-Xwayland
-xorg-x11-xauth
-zathura
-zathura-pdf-poppler
-zathura-plugins-all
-zsh
-EOF
+FEDORA_PACKAGES=(
+  accountsservice
+  bleachbit
+  bluez-tools
+  brightnessctl
+  cargo
+  chezmoi
+  cmake
+  cronie
+  curl
+  ddcutil
+  direnv
+  distrobox
+  emacs-pgtk
+  fail2ban
+  file-roller
+  fontconfig
+  fonts-filesystem
+  gcc-c++
+  git
+  gnome-keyring
+  gnome-tweaks
+  go
+  grim
+  gsettings-desktop-schemas
+  gtk4-layer-shell
+  gzip
+  ImageMagick
+  imv
+  inotify-tools
+  jq
+  kitty
+  kitty-shell-integration
+  kitty-terminfo
+  libinput-utils
+  logrotate
+  ly
+  lynis
+  man-db
+  mpv
+  neovim
+  ninja-build
+  nodejs
+  npm
+  papers
+  papirus-icon-theme
+  pipx
+  pkgconf-pkg-config
+  policycoreutils-python-utils
+  pymol
+  qt5ct
+  slurp
+  sqlite
+  swappy
+  transmission-gtk
+  tree-sitter-cli
+  udiskie
+  xdg-desktop-portal
+  xdg-user-dirs
+  xdg-user-dirs-gtk
+  xhost
+  xorg-x11-server-Xorg
+  xorg-x11-server-Xwayland
+  xorg-x11-xauth
+  zathura
+  zathura-pdf-poppler
+  zathura-plugins-all
+  zsh
+)
 
 # hyprland-git, noctalia-git, nwg-look, qt6ct, xdg-desktop-portal-hyprland
 # and cliphist come from the lionheartp/Hyprland COPR; zen-browser from
@@ -199,7 +199,7 @@ stage_disable_repos() {
 stage_verify_kernel() {
   local akmods_path="${1:?usage: build.sh verify-kernel <akmods rpms dir>}"
 
-  BASE_KERNEL="$(rpm -q --qf '%{VERSION}-%{RELEASE}' kernel-core)"
+  BASE_KERNEL="$(rpm -q --qf '%{VERSION}-%{RELEASE}.%{ARCH}' kernel-core 2>/dev/null || rpm -q --qf '%{VERSION}-%{RELEASE}' kernel-core)"
   echo "Base image kernel : ${BASE_KERNEL}"
 
   KMOD_RPM="$(find "${akmods_path}"/kmods -maxdepth 1 -name 'kmod-nvidia-*.rpm' 2>/dev/null | head -n1)"
@@ -220,7 +220,10 @@ stage_verify_kernel() {
   fi
 
   echo "akmods kmod kernel: ${AKMODS_KERNEL}"
-  if [[ "${BASE_KERNEL}" != "${AKMODS_KERNEL}" ]]; then
+  BASE_KERNEL_NOARCH="${BASE_KERNEL%.*}"
+  AKMODS_KERNEL_NOARCH="${AKMODS_KERNEL%.*}"
+
+  if [[ "${BASE_KERNEL}" != "${AKMODS_KERNEL}" && "${BASE_KERNEL_NOARCH}" != "${AKMODS_KERNEL_NOARCH}" ]]; then
     echo "ERROR: kernel mismatch -- akmods image is built for '${AKMODS_KERNEL}'" >&2
     echo "       but the base image ships '${BASE_KERNEL}'." >&2
     echo "       This is transient: the daily CI cron retries until the base" >&2
