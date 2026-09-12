@@ -51,8 +51,8 @@ ARG SHA_HEAD_SHORT="${SHA_HEAD_SHORT}"
 ARG VERSION_TAG="${VERSION_TAG}"
 ARG VERSION_PRETTY="${VERSION_PRETTY}"
 
-# Prebuilt Homebrew tarball from the ublue brew image
-COPY --from=brew /usr/share/homebrew.tar.zst /usr/share/homebrew.tar.zst
+# Copy Homebrew files, units, and tarball from the ublue brew image
+COPY --from=brew /system_files/ /
 
 # Runtime configuration, systemd units, justfiles and helper scripts
 COPY system_files/ /
@@ -142,13 +142,13 @@ RUN --mount=type=cache,dst=/var/cache \
     /ctx/install/setup-flatpaks.sh && \
     /ctx/cleanup
 
-# Homebrew and its packages (baked into the image)
+# Homebrew packages manifest
 RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/cache/libdnf5 \
     --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
-    /ctx/install/install-brew.sh && \
+    /ctx/install/setup-brew-packages.sh && \
     /ctx/cleanup
 
 ######################

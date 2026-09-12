@@ -240,6 +240,7 @@ stage_services() {
   systemctl --global enable chezmoi-init.service chezmoi-update.timer
   systemctl --global enable home-manager-init.service pyprland.service
   systemctl --global enable user-flatpak-setup.timer
+  systemctl --global enable brew-packages-setup.service
 }
 
 main() {
