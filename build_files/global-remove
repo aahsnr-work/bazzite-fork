@@ -84,4 +84,18 @@ REMOVE_ALL=(
   zinnia-tomoe-ja
 )
 
-dnf5 -y --setopt=skip_missing_names_on_remove=True remove "${REMOVE_ALL[@]}"
+TO_REMOVE=()
+for pkg in "${REMOVE_ALL[@]}"; do
+  mapfile -t MATCHES < <(rpm -qa --queryformat '%{NAME}\n' "${pkg}" 2>/dev/null || true)
+  for match in "${MATCHES[@]}"; do
+    [[ -n "${match}" ]] && TO_REMOVE+=("${match}")
+  done
+done
+
+if [[ ${#TO_REMOVE[@]} -gt 0 ]]; then
+  mapfile -t UNIQUE_REMOVE < <(printf '%s\n' "${TO_REMOVE[@]}" | sort -u)
+  echo "Removing ${#UNIQUE_REMOVE[@]} installed package(s): ${UNIQUE_REMOVE[*]}"
+  dnf5 -y remove "${UNIQUE_REMOVE[@]}"
+else
+  echo "None of the specified packages are installed; skipping removal."
+fi
