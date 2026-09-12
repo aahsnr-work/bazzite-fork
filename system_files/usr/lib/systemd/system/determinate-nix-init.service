@@ -1,0 +1,16 @@
+[Unit]
+Description=Determinate Nix first-boot initialization
+After=nix-daemon.socket determinate-nixd.socket
+Wants=nix-daemon.socket determinate-nixd.socket
+ConditionPathExists=!/etc/.nix-initialized
+
+[Service]
+Type=oneshot
+# On first boot, ensure Nix itself is updated to the latest Determinate release.
+ExecStart=/usr/local/bin/determinate-nixd upgrade
+# Mark the one-shot as done /etc persists across reboots on bootc systems.
+ExecStartPost=/bin/sh -c 'touch /etc/.nix-initialized'
+TimeoutStartSec=1800
+
+[Install]
+WantedBy=multi-user.target

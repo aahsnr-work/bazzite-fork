@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+#
+# flatpak-setup - verify that the baked-in Flatpaks are installed.
+#
+# The image ships every Flatpak from the recipe list baked into the system
+# installation. On an ostree/bootc system /var (and therefore the system
+# Flatpak repository) persists across upgrades, but a *fresh* deploy of the
+# image starts with an empty /var - this script then re-installs the list.
+#
+# Technique borrowed from the blue-build default-flatpaks module.
+#
+set -euo pipefail
+
+FLATPAK_LIST="/etc/hyprland-image/flatpaks"
+
+install_flathub() {
+  local scope="$1"
+  flatpak "${scope}" remote-add --if-not-exists flathub \
+    https://dl.flathub.org/repo/flathub.flatpakrepo || true
+}
+
+install_list() {
+  local scope="$1"
+  if [[ ! -f "${FLATPAK_LIST}" ]]; then
+    echo "No Flatpak list at ${FLATPAK_LIST}; nothing to verify" >&2
+    return 0
+  fi
+  while read -r pkg; do
+    [[ -z "${pkg}" ]] && continue
+    if flatpak "${scope}" info "${pkg}" >/dev/null 2>&1; then
+      echo "OK: ${pkg}"
+    else
+      echo "Missing: ${pkg} - installing"
+      flatpak "${scope}" install --noninteractive --assumeyes flathub "${pkg}" \
+        || echo "WARNING: could not install ${pkg} (will retry next boot)" >&2
+    fi
+  done < "${FLATPAK_LIST}"
+}
+
+case "${1:?usage: flatpak-setup system|user}" in
+  system)
+    install_flathub --system
+    install_list --system
+    ;;
+  user)
+    install_flathub --user
+    ;;
+  *)
+    echo "Unknown mode: ${1} (expected system|user)" >&2
+    exit 1
+    ;;
+esac

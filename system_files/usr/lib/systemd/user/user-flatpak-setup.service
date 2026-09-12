@@ -1,0 +1,11 @@
+[Unit]
+Description=Verify Flathub remote for the user
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/libexec/hyprland-image/flatpak-setup user
+
+[Install]
+WantedBy=default.target

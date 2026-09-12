@@ -1,0 +1,12 @@
+# Build/test artifacts
+*.build
+*.log
+/tmp/
+/dist/
+# Locally built container archives
+*.tar
+*.oci
+# Editor noise
+.vscode/
+.idea/
+*.swp

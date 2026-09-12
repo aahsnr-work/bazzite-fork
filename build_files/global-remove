@@ -1,0 +1,87 @@
+#!/usr/bin/env bash
+#
+# Remove the packages listed in the `remove:` section of the recipe.yml.
+#
+# Missing packages (for example the GNOME-only packages that only exist on
+# bazzite images) are tolerated; anything that is installed is removed.
+#
+set -eoux pipefail
+
+REMOVE_ALL=(
+  bluez-cups
+  cage
+  'cardwire*'
+  epiphany-runtime
+  erlang-srpm-macros
+  evolution-data-server
+  evolution-data-server-langpacks
+  evolution-ews-core
+  evolution-ews-langpacks
+  fish
+  gdm
+  gnome-bluetooth
+  gnome-bluetooth-libs
+  gnome-control-center
+  gnome-control-center-filesystem
+  gnome-online-accounts
+  gnome-online-accounts-libs
+  gnome-remote-desktop
+  gnome-rounded-blur
+  gnome-search-yafti
+  gnome-session
+  gnome-session-wayland-session
+  gnome-settings-daemon
+  gnome-shell
+  gnome-shell-common
+  gnome-shell-extension-common
+  gnome-shell-extension-gsconnect
+  gnome-shell-extension-user-theme
+  gnome-srpm-macros
+  gnome-user-docs
+  gnome-user-share
+  go-srpm-macros
+  google-noto-sans-balinese-fonts
+  google-noto-sans-cjk-fonts
+  google-noto-sans-javanese-fonts
+  google-noto-sans-sundanese-fonts
+  gstreamer1-plugins-good-qt
+  gstreamer1-plugins-good-qt6
+  jupiter-sd-mounting-btrfs
+  hunspell-en-AU
+  mutter
+  mutter-common
+  nano
+  nano-default-editor
+  nautilus
+  nautilus-extensions
+  nautilus-gsconnect
+  nautilus-python
+  NetworkManager-ssh-gnome
+  openrazer
+  papers-libs
+  papers-nautilus
+  papers-previewer
+  papers-thumbnailer
+  ptyxis
+  twitter-twemoji-fonts
+  rom-properties
+  rom-properties-common
+  rom-properties-gtk4
+  rom-properties-localsearch3
+  rom-properties-utils
+  'steamdeck*'
+  tree-sitter-srpm-macros
+  twitter-twemoji-fonts
+  'vim*'
+  'xdg-desktop-portal-gnome*'
+  yad
+  ydotool
+  yelp
+  yelp-libs
+  zenergy
+  zenergy-akmod-modules
+  zinnia
+  zinnia-tomoe-ja
+)
+
+dnf5 -y --setopt=skip_missing_names_on_remove=True remove "${REMOVE_ALL[@]}"
