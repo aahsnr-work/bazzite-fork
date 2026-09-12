@@ -165,9 +165,13 @@ stage_remove() {
 stage_install_base() {
   dnf5 -y --setopt=install_weak_deps=False install "${FEDORA_PACKAGES[@]}"
 
-  # ly (display manager on tty1) comes from the official Fedora repository
+  # ly (display manager on tty2) comes from the official Fedora repository
   systemctl enable ly@tty2.service
   systemctl mask getty@tty2.service
+
+  # Set SELinux file context for ly (xdm_exec_t) to prevent session launch transition denials (#494)
+  semanage fcontext -a -t xdm_exec_t /usr/bin/ly 2>/dev/null || semanage fcontext -m -t xdm_exec_t /usr/bin/ly 2>/dev/null || true
+  restorecon -v /usr/bin/ly 2>/dev/null || true
 }
 
 stage_install_hyprland() {

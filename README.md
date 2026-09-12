@@ -13,7 +13,7 @@ packages.
 
 - **Base**: `ghcr.io/ublue-os/silverblue-main:44` (stock Fedora kernel)
 - **NVIDIA**: open driver from `ghcr.io/ublue-os/akmods-nvidia-open`
-- **Display manager**: `ly` on tty1 (`getty@tty1` masked)
+- **Display manager**: `ly` on tty2 (`getty@tty2` masked)
 - **Desktop**: `hyprland-git`, `noctalia-git`, `nwg-look`, `qt6ct`,
   `xdg-desktop-portal-hyprland`, `cliphist` (lionheartp/Hyprland COPR)
 - **Apps**: `zed` (Terra), VS Code, Brave, Obsidian, Zotero, Pyprland,
