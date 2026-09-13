@@ -8,7 +8,7 @@ set shell := ["/usr/bin/bash", "-cu"]
 
 # Shellcheck all bash scripts
 @lint:
-    shellcheck build_files/* build_files/install/*
+    find build_files system_files/usr/libexec/hyprland-image system_files/etc/profile.d -type f -exec shellcheck {} +
 
 # Show the Containerfile stages
 @stages:

@@ -71,7 +71,6 @@ REMOVE_ALL=(
   rom-properties-utils
   'steamdeck*'
   tree-sitter-srpm-macros
-  twitter-twemoji-fonts
   'vim*'
   'xdg-desktop-portal-gnome*'
   yad

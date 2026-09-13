@@ -12,7 +12,7 @@ NERD_FONTS=("JetBrainsMono" "NerdFontsSymbolsOnly")
 
 for FONT in "${NERD_FONTS[@]}"; do
   [ -n "${FONT}" ] || continue
-  rm -rf "${NERD_DEST}/${FONT}"
+  rm -rf "${NERD_DEST:?}/${FONT:?}"
   mkdir -p "${NERD_DEST}/${FONT}"
   echo "Downloading ${FONT} from ${NERD_URL}/${FONT}.tar.xz"
   curl -fLsS --retry 5 --create-dirs "${NERD_URL}/${FONT}.tar.xz" -o "${FONT_TMP}/${FONT}.tar.xz"
@@ -25,7 +25,7 @@ GOOGLE_FONTS=("JetBrains Mono" "Noto Emoji" "Noto Color Emoji")
 
 for FONT in "${GOOGLE_FONTS[@]}"; do
   [ -n "${FONT}" ] || continue
-  rm -rf "${GOOGLE_DEST}/${FONT}"
+  rm -rf "${GOOGLE_DEST:?}/${FONT:?}"
   mkdir -p "${GOOGLE_DEST}/${FONT}"
 
   readarray -t FILE_REFS < <(

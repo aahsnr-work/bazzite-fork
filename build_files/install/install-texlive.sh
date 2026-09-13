@@ -28,9 +28,15 @@ tlpdbopt_autobackup 0
 tlpdbopt_install_docfiles 0
 tlpdbopt_install_srcfiles 0
 EOF
-  "${TEXLIVE_TMP}"/install-tl-*/install-tl \
-    -profile "${TEXLIVE_TMP}/texlive.profile" \
-    -no-interaction || echo "WARNING: install-tl exited non-zero" >&2
+  INSTALLER="$(find "${TEXLIVE_TMP}" -mindepth 2 -maxdepth 2 -name 'install-tl' -type f -perm /111 | head -n1)"
+  if [[ -n "${INSTALLER}" && -x "${INSTALLER}" ]]; then
+    "${INSTALLER}" \
+      -profile "${TEXLIVE_TMP}/texlive.profile" \
+      -no-interaction || echo "WARNING: install-tl exited non-zero" >&2
+  else
+    echo "ERROR: install-tl installer executable not found under ${TEXLIVE_TMP}" >&2
+    exit 1
+  fi
 
   TEXLIVE_BINDIR="$(find "${TEXLIVE_INSTALL_DIR}" -maxdepth 3 -type d -name 'x86_64-linux' | head -n1)"
   if [ -n "${TEXLIVE_BINDIR}" ]; then
