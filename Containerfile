@@ -168,13 +168,16 @@ RUN --mount=type=cache,dst=/var/cache \
 ###########################
 # DETERMINATE NIX + HM    #
 ###########################
-# RUN --mount=type=cache,dst=/var/cache \
-#     --mount=type=cache,dst=/var/cache/libdnf5 \
-#     --mount=type=cache,dst=/var/log \
-#     --mount=type=bind,from=ctx,source=/,target=/ctx \
-#     --mount=type=tmpfs,dst=/tmp \
-#     /ctx/install/setup-nix-base.sh && \
-#     /ctx/cleanup
+# setup-nix-base.sh bakes a full Determinate Nix store at build time, packs
+# it as a first-boot seed tarball under /usr/share, and turns /nix into a
+# symlink to the persistent /var/nix (extracted by nix-store-seed.service).
+RUN --mount=type=cache,dst=/var/cache \
+    --mount=type=cache,dst=/var/cache/libdnf5 \
+    --mount=type=cache,dst=/var/log \
+    --mount=type=bind,from=ctx,source=/,target=/ctx \
+    --mount=type=tmpfs,dst=/tmp \
+    /ctx/install/setup-nix-base.sh && \
+    /ctx/cleanup
 
 #######################
 # NVIDIA (Open) DRIVER #

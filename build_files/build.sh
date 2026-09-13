@@ -237,6 +237,7 @@ stage_services() {
   # system services
   systemctl enable accounts-daemon.service
   systemctl enable podman.socket
+  systemctl enable nix-store-seed.service
   systemctl enable nix-daemon.socket determinate-nixd.socket
   systemctl enable determinate-nix-init.service
   systemctl enable brew-setup.service

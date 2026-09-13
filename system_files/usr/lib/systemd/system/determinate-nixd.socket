@@ -1,5 +1,9 @@
 [Unit]
 Description=Determinate Nixd Daemon Socket
+# The store is extracted into the persistent /var/nix by nix-store-seed
+# before anything may use /nix; fail loudly if the seed fails.
+After=nix-store-seed.service
+Requires=nix-store-seed.service
 Before=multi-user.target
 RequiresMountsFor=/nix/store
 RequiresMountsFor=/nix/var/determinate

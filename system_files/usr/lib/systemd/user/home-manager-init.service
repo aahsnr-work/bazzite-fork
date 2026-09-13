@@ -1,6 +1,9 @@
 [Unit]
 Description=Apply the home-manager configuration for the user
-After=graphical-session-pre.target
+# Do not race the first-boot store seed or the Determinate upgrade: the
+# system-side nix-store-seed.service and determinate-nix-init.service must
+# have finished before the first home-manager switch.
+After=graphical-session-pre.target nix-store-seed.service determinate-nix-init.service
 ConditionPathExists=|%h/.config/home-manager/home.nix
 ConditionPathExists=|%h/.config/home-manager/flake.nix
 ConditionPathExists=!%h/.cache/home-manager-init-done

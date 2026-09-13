@@ -1,6 +1,9 @@
 [Unit]
 Description=Determinate Nix first-boot initialization
-After=nix-daemon.socket determinate-nixd.socket
+# Run after the store has been seeded into /var/nix; the upgrade below needs
+# a complete, writable store.
+After=nix-store-seed.service nix-daemon.socket determinate-nixd.socket
+Requires=nix-store-seed.service
 Wants=nix-daemon.socket determinate-nixd.socket
 ConditionPathExists=!/etc/.nix-initialized
 
