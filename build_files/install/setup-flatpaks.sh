@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-echo "=== Removing unwanted Flatpaks from base image and configuring user Flatpaks ==="
+echo "=== Removing unwanted system Flatpaks from base image ==="
 
 # Flatpaks to remove from the system scope (from Fedora/base image)
 REMOVE_SYSTEM_FLATPAKS=(
@@ -28,13 +28,37 @@ REMOVE_SYSTEM_FLATPAKS=(
   org.gnome.clocks
 )
 
-# Uninstall system flatpaks if present at build time
-for pkg in "${REMOVE_SYSTEM_FLATPAKS[@]}"; do
-  if flatpak --system info "${pkg}" >/dev/null 2>&1; then
-    echo "Removing system Flatpak: ${pkg}"
-    flatpak --system uninstall --noninteractive --assumeyes "${pkg}" || true
-  fi
-done
+REMOVED=0
+ALREADY_ABSENT=0
+FAILED=0
+
+if ! command -v flatpak >/dev/null 2>&1; then
+  echo "WARNING: 'flatpak' binary not found in the image; skipping removal." >&2
+else
+  for pkg in "${REMOVE_SYSTEM_FLATPAKS[@]}"; do
+    if flatpak --system info "${pkg}" >/dev/null 2>&1; then
+      if flatpak --system uninstall --noninteractive --assumeyes "${pkg}"; then
+        echo "OK: uninstalled system Flatpak '${pkg}'"
+        REMOVED=$((REMOVED + 1))
+      else
+        echo "WARNING: failed to uninstall system Flatpak '${pkg}'" >&2
+        FAILED=$((FAILED + 1))
+      fi
+    else
+      echo "SKIP: system Flatpak '${pkg}' is not installed in the base image"
+      ALREADY_ABSENT=$((ALREADY_ABSENT + 1))
+    fi
+  done
+fi
+
+echo
+echo "=== System Flatpak removal summary (build time) ==="
+echo "  Uninstalled : ${REMOVED}"
+echo "  Not present : ${ALREADY_ABSENT}"
+echo "  Failed      : ${FAILED}"
+if [[ "${FAILED}" -gt 0 ]]; then
+  echo "NOTE: failed removals are retried at first login by the user-flatpak-setup service." >&2
+fi
 
 # User-scope flatpaks list (empty for now; add future user flatpaks here)
 USER_FLATPAKS=(
