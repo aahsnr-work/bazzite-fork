@@ -18,24 +18,60 @@ fi
 install -d /var/nix
 
 # ---------------------------------------------------------------------------
+# On this Fedora Atomic (ostree) base image, /usr/local is not a real
+# directory -- it's a symlink to ../var/usrlocal, the standard ostree layout
+# that keeps /usr read-only after deployment while leaving /usr/local
+# writable (the same trick used for /home -> var/home and /opt -> var/opt,
+# see install-brave.sh). /var/usrlocal itself is only created by
+# systemd-tmpfiles at first boot, which never runs inside this plain
+# container build, so right now the symlink exists but its target does not.
+#
+# Since Nov 2025 the installer unconditionally provisions Determinate Nixd
+# (see https://determinate.systems/blog/installer-dropping-upstream/). Its
+# `provision_determinate_nixd` action hardcodes the target to
+# /usr/local/bin/determinate-nixd and does a plain
+# `tokio::fs::create_dir_all("/usr/local/bin")`
+# (src/action/common/provision_determinate_nixd.rs upstream). Rust's
+# create_dir_all falls back to a bare `mkdir("/usr/local")` when it can't
+# create the full path in one step, and mkdir() on a path that's already a
+# (dangling) symlink returns EEXIST -- reproduced locally -- which is
+# exactly:
+#   Creating directory `/usr/local/bin`: File exists (os error 17)
+#
+# --force does NOT fix this, despite what a previous version of this comment
+# claimed: in nix-installer's source, `force` is only consulted by the
+# create_file action (e.g. writing /etc/nix/nix.conf) and the macOS volume
+# planner -- never by create_directory or provision_determinate_nixd. It's
+# kept below only because it's still needed for the nix.conf step.
+#
+# This is the same class of bug reported upstream against Fedora
+# Atomic/Bluefin/Silverblue images -- the installer assumes ostree paths
+# that are only provisioned at real boot time, which don't exist yet inside
+# a plain container image build:
+#   https://github.com/DeterminateSystems/nix-installer/issues/1682
+#   https://github.com/DeterminateSystems/nix-installer/issues/1771
+# (those hit it through the auto-selected `ostree` planner trying to mount
+# /nix over a not-yet-real path; pinning the `linux` planner below already
+# avoids that specific failure, but not this separate Determinate Nixd step).
+#
+# Fix: make sure the real backing directory exists before anything writes
+# through the symlink, exactly like install-brave.sh does for /opt. Content
+# written under /var at build time seeds the initial ostree deployment's
+# /var (the same reason /var/nix is pre-created above), so determinate-nixd
+# also persists correctly once the image is deployed. The -L guard keeps
+# this a no-op if the base image ever ships /usr/local as a real directory
+# (e.g. if ostree's opt-usrlocal-overlays becomes the default).
+# ---------------------------------------------------------------------------
+if [[ -L /usr/local ]]; then
+  install -d "$(readlink -f /usr/local)"
+else
+  install -d /usr/local
+fi
+
+# ---------------------------------------------------------------------------
 # Determinate Nix installer. --init none because the build container has no
 # init system; the systemd units are baked via system_files and enabled in
 # the services stage.
-#
-# --force is required on this base image: ghcr.io/ublue-os/silverblue-main
-# is a full Fedora Atomic desktop image, so the standard Fedora `filesystem`
-# package has already pre-created /usr/local/{bin,etc,lib,...} as real
-# directories (unlike the slim/minimal images -- Ubuntu containers, GitHub
-# Actions runners, etc. -- that the installer is usually tested against).
-# Since Nov 2025 the installer unconditionally provisions Determinate Nixd
-# (see https://determinate.systems/blog/installer-dropping-upstream/), whose
-# `provision_determinate_nixd` step needs to (re)create /usr/local/bin to
-# drop its daemon binary/symlinks into. By default the installer refuses to
-# touch a path it finds already existing there, which is exactly what
-# produces:
-#   Creating directory `/usr/local/bin`: File exists (os error 17)
-# --force tells it to go ahead and recreate any such pre-existing paths,
-# which is safe here since this is a from-scratch image build.
 # ---------------------------------------------------------------------------
 curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix |
   sh -s -- install linux --init none --no-confirm --force --extra-conf "sandbox = false"
