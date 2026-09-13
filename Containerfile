@@ -137,7 +137,7 @@ RUN --mount=type=cache,dst=/var/cache \
     /ctx/install/install-obsidian.sh && \
     /ctx/install/install-zotero.sh && \
     /ctx/install/install-pyprland.sh && \
-    /ctx/install/install-texlive.sh && \
+    # /ctx/install/install-texlive.sh && \
     /ctx/install/setup-fonts.sh && \
     /ctx/install/setup-flatpaks.sh && \
     /ctx/cleanup
