@@ -1,61 +1,48 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-echo "=== Baking system Flatpaks into the image ==="
+echo "=== Removing unwanted Flatpaks from base image and configuring user Flatpaks ==="
 
-# System flatpaks from the recipe: these are the applications and runtimes
-# that every user should have. Installed at build time so they are present
-# right after login; a per-boot verify service tops anything up that the
-# OSTree /var merge missed on a fresh deploy.
-FLATPAKS=(
-  com.github.Matoking.protontricks
-  com.github.tchx84.Flatseal
-  com.mattjakeman.ExtensionManager
-  com.obsproject.Studio.Plugin.GStreamerVaapi
-  com.obsproject.Studio.Plugin.Gstreamer
-  com.obsproject.Studio.Plugin.OBSVkCapture
-  com.ranfdev.DistroShelf
-  com.vysp3r.ProtonPlus
-  io.github.flattool.Warehouse
-  io.missioncenter.MissionCenter
-  org.freedesktop.Platform
-  org.freedesktop.Platform.Compat.i386
-  org.freedesktop.Platform.GL.default
-  org.freedesktop.Platform.GL32.default
-  org.freedesktop.Platform.VulkanLayer.MangoHud
-  org.freedesktop.Platform.VulkanLayer.OBSVkCapture
-  org.freedesktop.Platform.VulkanLayer.vkBasalt
-  org.freedesktop.Platform.codecs-extra
+# Flatpaks to remove from the system scope (from Fedora/base image)
+REMOVE_SYSTEM_FLATPAKS=(
+  org.fedoraproject.MediaWriter
+  org.fedoraproject.Platform
+  org.fedoraproject.Platform.CL.default
+  org.fedoraproject.Platform.GL.default
+  org.fedoraproject.Platform.Locale
   org.gnome.Calculator
   org.gnome.Calendar
   org.gnome.Characters
+  org.gnome.Connections
   org.gnome.Contacts
-  org.gnome.Firmware
+  org.gnome.Extensions
   org.gnome.Logs
+  org.gnome.Loupe
+  org.gnome.Maps
   org.gnome.NautilusPreviewer
   org.gnome.Papers
-  org.gnome.Platform
-  org.gnome.Showtime
+  org.gnome.Snapshot
   org.gnome.TextEditor
   org.gnome.Weather
   org.gnome.baobab
   org.gnome.clocks
-  org.gnome.font-viewer
-  page.tesk.Refine
 )
 
-# The per-boot verifier reads this file
-install -d /etc/hyprland-image
-printf '%s\n' "${FLATPAKS[@]}" > /etc/hyprland-image/flatpaks
-
-flatpak --system remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
-
-# Baked in; tolerate individual failures (the flatpak-setup service retries
-# anything that failed here on the next boot).
-for pkg in "${FLATPAKS[@]}"; do
-  echo "Installing Flatpak: ${pkg}"
-  flatpak --system install --noninteractive --assumeyes flathub "${pkg}" \
-    || echo "WARNING: could not install ${pkg} at build time (will retry at boot)" >&2
+# Uninstall system flatpaks if present at build time
+for pkg in "${REMOVE_SYSTEM_FLATPAKS[@]}"; do
+  if flatpak --system info "${pkg}" >/dev/null 2>&1; then
+    echo "Removing system Flatpak: ${pkg}"
+    flatpak --system uninstall --noninteractive --assumeyes "${pkg}" || true
+  fi
 done
 
-echo "System Flatpaks are baked into the image."
+# User-scope flatpaks list (empty for now; add future user flatpaks here)
+USER_FLATPAKS=(
+)
+
+# Record the manifests in /etc/hyprland-image for the user flatpak setup service
+install -d /etc/hyprland-image
+printf '%s\n' "${REMOVE_SYSTEM_FLATPAKS[@]}" > /etc/hyprland-image/system-flatpaks-remove
+printf '%s\n' "${USER_FLATPAKS[@]}" > /etc/hyprland-image/user-flatpaks
+
+echo "Flatpak configuration manifests created in /etc/hyprland-image/"

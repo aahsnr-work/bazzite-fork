@@ -1,11 +1,12 @@
 [Unit]
-Description=Verify Flathub remote for the user
-After=network-online.target
+Description=Setup Flathub and user flatpaks
+After=network-online.target default.target
 Wants=network-online.target
 
 [Service]
 Type=oneshot
-ExecStart=/usr/libexec/hyprland-image/flatpak-setup user
+ExecStart=/usr/libexec/hyprland-image/flatpak-setup
+TimeoutStartSec=1800
 
 [Install]
 WantedBy=default.target

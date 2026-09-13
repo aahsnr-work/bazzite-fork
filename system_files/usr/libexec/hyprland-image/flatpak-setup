@@ -1,52 +1,40 @@
 #!/usr/bin/env bash
 #
-# flatpak-setup - verify that the baked-in Flatpaks are installed.
-#
-# The image ships every Flatpak from the recipe list baked into the system
-# installation. On an ostree/bootc system /var (and therefore the system
-# Flatpak repository) persists across upgrades, but a *fresh* deploy of the
-# image starts with an empty /var - this script then re-installs the list.
-#
-# Technique borrowed from the blue-build default-flatpaks module.
+# flatpak-setup - user-scope Flatpak installer and system Flatpak cleaner
 #
 set -euo pipefail
 
-FLATPAK_LIST="/etc/hyprland-image/flatpaks"
+SYSTEM_REMOVE_LIST="/etc/hyprland-image/system-flatpaks-remove"
+USER_INSTALL_LIST="/etc/hyprland-image/user-flatpaks"
 
-install_flathub() {
-  local scope="$1"
-  flatpak "${scope}" remote-add --if-not-exists flathub \
-    https://dl.flathub.org/repo/flathub.flatpakrepo || true
-}
+# Ensure Flathub is added for the user
+flatpak remote-add --user --if-not-exists flathub \
+  https://dl.flathub.org/repo/flathub.flatpakrepo || true
 
-install_list() {
-  local scope="$1"
-  if [[ ! -f "${FLATPAK_LIST}" ]]; then
-    echo "No Flatpak list at ${FLATPAK_LIST}; nothing to verify" >&2
-    return 0
-  fi
+# Remove unwanted system flatpaks if any persist on deployment
+if [[ -f "${SYSTEM_REMOVE_LIST}" ]]; then
   while read -r pkg; do
-    [[ -z "${pkg}" ]] && continue
-    if flatpak "${scope}" info "${pkg}" >/dev/null 2>&1; then
-      echo "OK: ${pkg}"
-    else
-      echo "Missing: ${pkg} - installing"
-      flatpak "${scope}" install --noninteractive --assumeyes flathub "${pkg}" \
-        || echo "WARNING: could not install ${pkg} (will retry next boot)" >&2
+    [[ -z "${pkg}" || "${pkg}" =~ ^# ]] && continue
+    if flatpak --system info "${pkg}" >/dev/null 2>&1; then
+      echo "Removing system Flatpak: ${pkg}"
+      flatpak --system uninstall --noninteractive --assumeyes "${pkg}" || true
     fi
-  done < "${FLATPAK_LIST}"
-}
+  done < "${SYSTEM_REMOVE_LIST}"
+fi
 
-case "${1:?usage: flatpak-setup system|user}" in
-  system)
-    install_flathub --system
-    install_list --system
-    ;;
-  user)
-    install_flathub --user
-    ;;
-  *)
-    echo "Unknown mode: ${1} (expected system|user)" >&2
-    exit 1
-    ;;
-esac
+# Install user flatpaks from the user-flatpaks manifest
+if [[ -f "${USER_INSTALL_LIST}" ]]; then
+  while read -r pkg; do
+    [[ -z "${pkg}" || "${pkg}" =~ ^# ]] && continue
+    if flatpak --user info "${pkg}" >/dev/null 2>&1; then
+      echo "OK (user): ${pkg}"
+    else
+      echo "Installing user Flatpak: ${pkg}"
+      flatpak --user install --noninteractive --assumeyes flathub "${pkg}" || {
+        echo "WARNING: Failed to install user Flatpak ${pkg}" >&2
+      }
+    fi
+  done < "${USER_INSTALL_LIST}"
+fi
+
+echo "Flatpak setup completed."

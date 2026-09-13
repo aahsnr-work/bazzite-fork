@@ -239,7 +239,6 @@ stage_services() {
   systemctl enable podman.socket
   systemctl enable nix-daemon.socket determinate-nixd.socket
   systemctl enable determinate-nix-init.service
-  systemctl enable flatpak-setup.timer
   systemctl enable brew-setup.service
   systemctl enable brew-update.timer brew-upgrade.timer
 

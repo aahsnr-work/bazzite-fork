@@ -25,7 +25,7 @@ packages.
   tealdeer, uv, yazi, zellij
 - **Dotfiles**: chezmoi (`aahsnr-configs/dots`) applied before Nix/HM
 - **Nix**: Determinate Nix + home-manager (baked, with first-login fallback)
-- **Flatpaks**: system list baked in, verified by `flatpak-setup` on boot
+- **Flatpaks**: user scope managed by `user-flatpak-setup.timer`
 
 ## ujust recipes
 
