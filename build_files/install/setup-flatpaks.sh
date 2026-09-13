@@ -60,13 +60,11 @@ if [[ "${FAILED}" -gt 0 ]]; then
   echo "NOTE: failed removals are retried at first login by the user-flatpak-setup service." >&2
 fi
 
-# User-scope flatpaks list (empty for now; add future user flatpaks here)
-USER_FLATPAKS=(
-)
-
-# Record the manifests in /etc/hyprland-image for the user flatpak setup service
+# Record the removal manifest in /etc/hyprland-image so the runtime
+# system-flatpak-setup service (see the default-flatpaks module,
+# build_files/install/setup-default-flatpaks.sh) can retry removing any of
+# these Flatpaks that reappear after a base image update.
 install -d /etc/hyprland-image
 printf '%s\n' "${REMOVE_SYSTEM_FLATPAKS[@]}" > /etc/hyprland-image/system-flatpaks-remove
-printf '%s\n' "${USER_FLATPAKS[@]}" > /etc/hyprland-image/user-flatpaks
 
-echo "Flatpak configuration manifests created in /etc/hyprland-image/"
+echo "Flatpak removal manifest created at /etc/hyprland-image/system-flatpaks-remove"

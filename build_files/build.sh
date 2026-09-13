@@ -241,6 +241,7 @@ stage_services() {
   systemctl enable determinate-nix-init.service
   systemctl enable brew-setup.service
   systemctl enable brew-update.timer brew-upgrade.timer
+  systemctl enable system-flatpak-setup.timer
 
   # user services (run for every user on their first login)
   systemctl --global enable chezmoi-init.service chezmoi-update.timer

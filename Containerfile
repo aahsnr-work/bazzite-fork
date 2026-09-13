@@ -140,6 +140,7 @@ RUN --mount=type=cache,dst=/var/cache \
     # /ctx/install/install-texlive.sh && \
     /ctx/install/setup-fonts.sh && \
     /ctx/install/setup-flatpaks.sh && \
+    /ctx/install/setup-default-flatpaks.sh && \
     /ctx/cleanup
 
 # Homebrew packages manifest

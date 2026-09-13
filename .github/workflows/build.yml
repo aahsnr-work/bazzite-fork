@@ -35,11 +35,6 @@ jobs:
         id: date
         run: echo "date=$(date +'%Y%m%d')" >> "$GITHUB_OUTPUT"
 
-      # The akmods image is pulled via its rolling tag (main-44-x86_64) which
-      # Universal Blue keeps pointed at the newest kernel build. The build
-      # itself verifies that the akmods kmod matches the base image kernel and
-      # fails loudly if they drift apart; this daily cron simply retries until
-      # they align again, so no manual kernel bumping is ever needed.
       - name: Pull base images
         run: |
           podman pull ghcr.io/ublue-os/${BASE_IMAGE_NAME}-main:${FEDORA_VERSION}

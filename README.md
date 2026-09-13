@@ -25,7 +25,11 @@ packages.
   tealdeer, uv, yazi, zellij
 - **Dotfiles**: chezmoi (`aahsnr-configs/dots`) applied before Nix/HM
 - **Nix**: Determinate Nix + home-manager (baked, with first-login fallback)
-- **Flatpaks**: user scope managed by `user-flatpak-setup.timer`
+- **Flatpaks**: system and user scope managed by a bash port of BlueBuild's
+  `default-flatpaks@v2` module (`system-flatpak-setup.timer` /
+  `user-flatpak-setup.timer`); the baked-in Flatpak list lives in
+  `build_files/install/setup-default-flatpaks.sh`. Inspect or re-run with
+  `ujust flatpaks-show` / `ujust flatpaks-apply` or `hyprland-flatpak-manager`.
 
 ## ujust recipes
 
@@ -34,6 +38,8 @@ packages.
 | `ujust update` | topgrade-replacement maintenance step |
 | `ujust rebase` | rebase to the latest image build |
 | `ujust doom-setup` | set up Doom Emacs after first login |
+| `ujust flatpaks-show` | print the Flatpaks configured by this image |
+| `ujust flatpaks-apply` | manually re-run the Flatpak setup |
 
 ## Build locally
 
