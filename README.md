@@ -1,4 +1,4 @@
-# bazzite-hyprland
+# bazzite-fork
 
 A single custom **Fedora Atomic / bootc** image: a desktop-free Universal Blue
 base with the **NVIDIA (open) driver**, the **Hyprland** Wayland compositor and
@@ -6,7 +6,9 @@ the **ly** display manager baked in, plus every application, font, Flatpak,
 dotfile and Homebrew package needed at first login -- ready to boot straight
 into a working Hyprland session.
 
-It is built with the same plain-bash + `Containerfile` build structure as
+The published image name matches this repository (`bazzite-fork`), which
+keeps the GHCR package automatically linked to the repo. It is built with
+the same plain-bash + `Containerfile` build structure as
 [ublue-os/bazzite](https://github.com/ublue-os/bazzite), but on top of the
 desktop-free `ghcr.io/ublue-os/base-main` image instead of a desktop image
 that has to be taken apart again.
@@ -216,7 +218,7 @@ All arguments have sensible defaults and can be overridden with
 | `ARCH` | `x86_64` | Target architecture |
 | `KERNEL_FLAVOR` | `main` | ublue akmods kernel flavour (rolling tag `main-44-x86_64`) |
 | `NVIDIA_FLAVOR` | `nvidia-open` | NVIDIA driver flavour (`nvidia-open`, `nvidia`) |
-| `IMAGE_NAME` | `bazzite-hyprland` | Image name baked into `image-info.json` / `os-release` |
+| `IMAGE_NAME` | `bazzite-fork` | Image name baked into `image-info.json` / `os-release` (kept equal to the repository name so GHCR auto-links the package) |
 | `IMAGE_VENDOR` | `ublue-os` | Registry namespace (set to the repo owner in CI) |
 | `SHA_HEAD_SHORT` / `VERSION_TAG` / `VERSION_PRETTY` | *(empty)* | Version metadata written into the image |
 
@@ -248,9 +250,9 @@ guards against this:
 
 On `main` it pushes to GHCR under the repository owner with the tags
 
-- `ghcr.io/<owner>/bazzite-hyprland:44`
-- `ghcr.io/<owner>/bazzite-hyprland:44-YYYYMMDD`
-- `ghcr.io/<owner>/bazzite-hyprland:44-<short-sha>`
+- `ghcr.io/<owner>/bazzite-fork:44`
+- `ghcr.io/<owner>/bazzite-fork:44-YYYYMMDD`
+- `ghcr.io/<owner>/bazzite-fork:44-<short-sha>`
 
 and **signs** the first two with cosign using the private key from the
 `SIGNING_SECRET` repository secret (signing is skipped if the secret is not
@@ -268,14 +270,14 @@ date (the image itself tracks rolling tags, so there is nothing to pin).
 **From an existing Fedora Atomic / ublue system** (bootc):
 
 ```bash
-sudo bootc switch ostree-image-signed:docker://ghcr.io/<owner>/bazzite-hyprland:44
+sudo bootc switch ostree-image-signed:docker://ghcr.io/<owner>/bazzite-fork:44
 systemctl reboot
 ```
 
 **From a system still using rpm-ostree:**
 
 ```bash
-sudo rpm-ostree rebase ostree-image-signed:docker://ghcr.io/<owner>/bazzite-hyprland:44
+sudo rpm-ostree rebase ostree-image-signed:docker://ghcr.io/<owner>/bazzite-fork:44
 systemctl reboot
 ```
 

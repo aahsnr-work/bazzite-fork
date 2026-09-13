@@ -40,7 +40,7 @@ COPY build_files /
 
 FROM ${BASE_IMAGE}
 
-ARG IMAGE_NAME="${IMAGE_NAME:-bazzite-hyprland}"
+ARG IMAGE_NAME="${IMAGE_NAME:-bazzite-fork}"
 ARG IMAGE_VENDOR="${IMAGE_VENDOR:-ublue-os}"
 ARG IMAGE_BRANCH="${IMAGE_BRANCH:-stable}"
 ARG BASE_IMAGE_NAME="${BASE_IMAGE_NAME:-base}"

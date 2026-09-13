@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# build.sh - the main build driver for the bazzite-hyprland image.
+# build.sh - the main build driver for the bazzite-fork image.
 #
 # The Containerfile calls this script for each build stage. All COPR
 # repositories are enabled together as a group (``stage repos``) and disabled
