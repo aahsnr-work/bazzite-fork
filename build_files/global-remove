@@ -2,8 +2,9 @@
 #
 # Remove the packages listed in the `remove:` section of the recipe.yml.
 #
-# Missing packages (for example the GNOME-only packages that only exist on
-# bazzite images) are tolerated; anything that is installed is removed.
+# Missing packages (for example Bazzite/SteamDeck-specific packages that
+# don't exist on a plain Universal Blue base image) are tolerated; anything
+# that is installed is removed.
 #
 set -eoux pipefail
 
@@ -13,32 +14,7 @@ REMOVE_ALL=(
   'cardwire*'
   epiphany-runtime
   erlang-srpm-macros
-  evolution-data-server
-  evolution-data-server-langpacks
-  evolution-ews-core
-  evolution-ews-langpacks
   fish
-  gdm
-  gnome-bluetooth
-  gnome-bluetooth-libs
-  gnome-control-center
-  gnome-control-center-filesystem
-  gnome-online-accounts
-  gnome-online-accounts-libs
-  gnome-remote-desktop
-  gnome-rounded-blur
-  gnome-search-yafti
-  gnome-session
-  gnome-session-wayland-session
-  gnome-settings-daemon
-  gnome-shell
-  gnome-shell-common
-  gnome-shell-extension-common
-  gnome-shell-extension-gsconnect
-  gnome-shell-extension-user-theme
-  gnome-srpm-macros
-  gnome-user-docs
-  gnome-user-share
   go-srpm-macros
   google-noto-sans-balinese-fonts
   google-noto-sans-cjk-fonts
@@ -48,14 +24,8 @@ REMOVE_ALL=(
   gstreamer1-plugins-good-qt6
   jupiter-sd-mounting-btrfs
   hunspell-en-AU
-  mutter
-  mutter-common
   nano
   nano-default-editor
-  nautilus
-  nautilus-extensions
-  nautilus-gsconnect
-  nautilus-python
   NetworkManager-ssh-gnome
   openrazer
   papers-libs
@@ -72,11 +42,8 @@ REMOVE_ALL=(
   'steamdeck*'
   tree-sitter-srpm-macros
   'vim*'
-  'xdg-desktop-portal-gnome*'
   yad
   ydotool
-  yelp
-  yelp-libs
   zenergy
   zenergy-akmod-modules
   zinnia

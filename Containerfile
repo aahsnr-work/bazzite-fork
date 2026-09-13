@@ -2,17 +2,19 @@
 # Custom gaming / Hyprland image, forked from the bazzite project's build
 # structure (https://github.com/ublue-os/bazzite/).
 #
-# A single image built on top of the plain uBlue Silverblue image (stock
-# Fedora kernel) with the NVIDIA open-source driver baked in through the ublue
-# akmods pipeline. GNOME is removed; ly provides the display manager; the
-# desktop is Hyprland from the lionheartp/Hyprland COPR.
+# A single image built on top of the plain uBlue "base" image (Universal
+# Blue's desktop-free image family -- the same Fedora Atomic/bootc
+# foundation as silverblue-main/kinoite-main, with no desktop environment
+# baked in) with the NVIDIA open-source driver baked in through the ublue
+# akmods pipeline. ly provides the display manager; the desktop is Hyprland
+# from the lionheartp/Hyprland COPR.
 #
 # Everything that is needed at login is baked in at build time: applications,
 # fonts, flatpaks, chezmoi dotfiles, Determinate Nix, home-manager and the
 # Homebrew packages.
 #
 
-ARG BASE_IMAGE_NAME="${BASE_IMAGE_NAME:-silverblue}"
+ARG BASE_IMAGE_NAME="${BASE_IMAGE_NAME:-base}"
 ARG FEDORA_VERSION="${FEDORA_VERSION:-44}"
 ARG ARCH="${ARCH:-x86_64}"
 ARG BASE_IMAGE="${BASE_IMAGE:-ghcr.io/ublue-os/${BASE_IMAGE_NAME}-main:${FEDORA_VERSION}}"
@@ -42,7 +44,7 @@ FROM ${BASE_IMAGE}
 ARG IMAGE_NAME="${IMAGE_NAME:-bazzite-hyprland}"
 ARG IMAGE_VENDOR="${IMAGE_VENDOR:-ublue-os}"
 ARG IMAGE_BRANCH="${IMAGE_BRANCH:-stable}"
-ARG BASE_IMAGE_NAME="${BASE_IMAGE_NAME:-silverblue}"
+ARG BASE_IMAGE_NAME="${BASE_IMAGE_NAME:-base}"
 ARG FEDORA_VERSION="${FEDORA_VERSION:-44}"
 ARG ARCH="${ARCH:-x86_64}"
 ARG KERNEL_FLAVOR="${KERNEL_FLAVOR:-main}"

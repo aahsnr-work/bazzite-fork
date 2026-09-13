@@ -4,18 +4,18 @@ on:
     branches:
       - main
     paths-ignore:
-      - '**.md'
-      - 'docs/**'
+      - "**.md"
+      - "docs/**"
   pull_request:
   merge_group:
   schedule:
-    - cron: '10 6 * * *'   # daily, shortly after the ublue base images build
+    - cron: "10 6 * * *" # daily, shortly after the ublue base images build
   workflow_dispatch:
 
 env:
   IMAGE_NAME: bazzite-hyprland
-  FEDORA_VERSION: '44'
-  BASE_IMAGE_NAME: silverblue
+  FEDORA_VERSION: "44"
+  BASE_IMAGE_NAME: base
   AKMODS_FLAVOR: main
   NVIDIA_FLAVOR: nvidia-open
 

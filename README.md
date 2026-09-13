@@ -1,9 +1,12 @@
 # bazzite-hyprland
 
-A single custom image built on top of the plain uBlue Silverblue image
-(`ghcr.io/ublue-os/silverblue-main`) with the NVIDIA open-source driver baked
-in through the ublue akmods pipeline. GNOME is removed; `ly` provides the
-display manager; the desktop is Hyprland from the `lionheartp/Hyprland` COPR.
+A single custom image built on top of the plain uBlue "base" image
+(`ghcr.io/ublue-os/base-main`) -- Universal Blue's desktop-free image,
+built from the same Fedora Atomic/bootc foundation as `silverblue-main` and
+`kinoite-main` but with no desktop environment baked in -- with the NVIDIA
+open-source driver baked in through the ublue akmods pipeline. `ly` provides
+the display manager; the desktop is Hyprland from the `lionheartp/Hyprland`
+COPR.
 
 Everything needed at login is baked in at build time: applications, fonts,
 Flatpaks, chezmoi dotfiles, Determinate Nix, home-manager and the Homebrew
@@ -11,7 +14,8 @@ packages.
 
 ## What is baked in
 
-- **Base**: `ghcr.io/ublue-os/silverblue-main:44` (stock Fedora kernel)
+- **Base**: `ghcr.io/ublue-os/base-main:44` (stock Fedora kernel, no desktop
+  environment)
 - **NVIDIA**: open driver from `ghcr.io/ublue-os/akmods-nvidia-open`
 - **Display manager**: `ly` on tty2 (`getty@tty2` masked)
 - **Desktop**: `hyprland-git`, `noctalia-git`, `nwg-look`, `qt6ct`,
@@ -33,13 +37,13 @@ packages.
 
 ## ujust recipes
 
-| Recipe | Purpose |
-| --- | --- |
-| `ujust update` | topgrade-replacement maintenance step |
-| `ujust rebase` | rebase to the latest image build |
-| `ujust doom-setup` | set up Doom Emacs after first login |
-| `ujust flatpaks-show` | print the Flatpaks configured by this image |
-| `ujust flatpaks-apply` | manually re-run the Flatpak setup |
+| Recipe                 | Purpose                                     |
+| ---------------------- | ------------------------------------------- |
+| `ujust update`         | topgrade-replacement maintenance step       |
+| `ujust rebase`         | rebase to the latest image build            |
+| `ujust doom-setup`     | set up Doom Emacs after first login         |
+| `ujust flatpaks-show`  | print the Flatpaks configured by this image |
+| `ujust flatpaks-apply` | manually re-run the Flatpak setup           |
 
 ## Build locally
 
