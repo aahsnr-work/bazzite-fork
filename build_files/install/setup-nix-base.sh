@@ -4,28 +4,6 @@ set -euo pipefail
 echo "=== Setting up Determinate Nix + home-manager ==="
 
 # ---------------------------------------------------------------------------
-# Determinate Nix is now the installer's only output (the --determinate flag
-# is implicit as of the Nov 2025 installer release; see
-# https://determinate.systems/blog/installer-dropping-upstream/), and its
-# `provision_determinate_nixd` step writes the daemon binary/symlinks into
-# /usr/local/bin. On this ostree base image /usr/local is a symlink to the
-# (nonexistent-at-build-time) ../var/usrlocal -- the same category of issue
-# already worked around for /opt in install-brave.sh. mkdir() on the
-# /usr/local path itself then fails with EEXIST (the symlink entry already
-# "exists"), which surfaces as:
-#   Creating directory `/usr/local/bin`: File exists (os error 17)
-# Redirect /usr/local to a real, pre-created directory under /usr/lib, the
-# same way install-brave.sh does for /opt, so the installer can create
-# /usr/local/bin normally. NOTE: like /opt, this makes /usr/local part of
-# the read-only /usr tree in the shipped image instead of the writable /var
-# -- an accepted tradeoff already made for /opt in this image.
-mkdir -p /usr/lib/usrlocal
-if [[ -L /usr/local && "$(readlink /usr/local)" == "var/usrlocal" ]]; then
-  rm -f /usr/local
-  ln -s usr/lib/usrlocal /usr/local
-fi
-
-# ---------------------------------------------------------------------------
 # /nix must survive system updates. On an OSTree/bootc image the deployment
 # root (and therefore a real /nix directory) is replaced on every upgrade, so
 # /nix is pointed at the persistent /var/nix.
@@ -43,9 +21,24 @@ install -d /var/nix
 # Determinate Nix installer. --init none because the build container has no
 # init system; the systemd units are baked via system_files and enabled in
 # the services stage.
+#
+# --force is required on this base image: ghcr.io/ublue-os/silverblue-main
+# is a full Fedora Atomic desktop image, so the standard Fedora `filesystem`
+# package has already pre-created /usr/local/{bin,etc,lib,...} as real
+# directories (unlike the slim/minimal images -- Ubuntu containers, GitHub
+# Actions runners, etc. -- that the installer is usually tested against).
+# Since Nov 2025 the installer unconditionally provisions Determinate Nixd
+# (see https://determinate.systems/blog/installer-dropping-upstream/), whose
+# `provision_determinate_nixd` step needs to (re)create /usr/local/bin to
+# drop its daemon binary/symlinks into. By default the installer refuses to
+# touch a path it finds already existing there, which is exactly what
+# produces:
+#   Creating directory `/usr/local/bin`: File exists (os error 17)
+# --force tells it to go ahead and recreate any such pre-existing paths,
+# which is safe here since this is a from-scratch image build.
 # ---------------------------------------------------------------------------
 curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix |
-  sh -s -- install linux --init none --no-confirm --extra-conf "sandbox = false"
+  sh -s -- install linux --init none --no-confirm --force --extra-conf "sandbox = false"
 
 # Shell integration for the baked-in profile
 install -d /etc/profile.d
