@@ -168,13 +168,13 @@ RUN --mount=type=cache,dst=/var/cache \
 ###########################
 # DETERMINATE NIX + HM    #
 ###########################
-RUN --mount=type=cache,dst=/var/cache \
-    --mount=type=cache,dst=/var/cache/libdnf5 \
-    --mount=type=cache,dst=/var/log \
-    --mount=type=bind,from=ctx,source=/,target=/ctx \
-    --mount=type=tmpfs,dst=/tmp \
-    /ctx/install/setup-nix-base.sh && \
-    /ctx/cleanup
+# RUN --mount=type=cache,dst=/var/cache \
+#     --mount=type=cache,dst=/var/cache/libdnf5 \
+#     --mount=type=cache,dst=/var/log \
+#     --mount=type=bind,from=ctx,source=/,target=/ctx \
+#     --mount=type=tmpfs,dst=/tmp \
+#     /ctx/install/setup-nix-base.sh && \
+#     /ctx/cleanup
 
 #######################
 # NVIDIA (Open) DRIVER #
