@@ -10,8 +10,7 @@
 # from the lionheartp/Hyprland COPR.
 #
 # Everything that is needed at login is baked in at build time: applications,
-# fonts, flatpaks, chezmoi dotfiles, Determinate Nix, home-manager and the
-# Homebrew packages.
+# fonts, flatpaks, chezmoi dotfiles and the Homebrew packages.
 #
 
 ARG BASE_IMAGE_NAME="${BASE_IMAGE_NAME:-base}"
@@ -157,28 +156,12 @@ RUN --mount=type=cache,dst=/var/cache \
 ######################
 # DOTFILES (chezmoi) #
 ######################
-# Dotfiles are applied BEFORE Determinate Nix and home-manager are set up, so
-# that the home-manager folder in ~/.config/ exists when home-manager starts.
 RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/cache/libdnf5 \
     --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
     /ctx/install/setup-dotfiles.sh && \
-    /ctx/cleanup
-
-###########################
-# DETERMINATE NIX + HM    #
-###########################
-# setup-nix-base.sh bakes a full Determinate Nix store at build time, packs
-# it as a first-boot seed tarball under /usr/share, and turns /nix into a
-# symlink to the persistent /var/nix (extracted by nix-store-seed.service).
-RUN --mount=type=cache,dst=/var/cache \
-    --mount=type=cache,dst=/var/cache/libdnf5 \
-    --mount=type=cache,dst=/var/log \
-    --mount=type=bind,from=ctx,source=/,target=/ctx \
-    --mount=type=tmpfs,dst=/tmp \
-    /ctx/install/setup-nix-base.sh && \
     /ctx/cleanup
 
 #######################

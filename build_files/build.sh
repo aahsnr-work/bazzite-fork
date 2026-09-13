@@ -237,16 +237,13 @@ stage_services() {
   # system services
   systemctl enable accounts-daemon.service
   systemctl enable podman.socket
-  systemctl enable nix-store-seed.service
-  systemctl enable nix-daemon.socket determinate-nixd.socket
-  systemctl enable determinate-nix-init.service
   systemctl enable brew-setup.service
   systemctl enable brew-update.timer brew-upgrade.timer
   systemctl enable system-flatpak-setup.timer
 
   # user services (run for every user on their first login)
   systemctl --global enable chezmoi-init.service chezmoi-update.timer
-  systemctl --global enable home-manager-init.service pyprland.service
+  systemctl --global enable pyprland.service
   systemctl --global enable user-flatpak-setup.timer
   systemctl --global enable brew-packages-setup.service
 }

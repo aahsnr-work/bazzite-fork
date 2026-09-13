@@ -1,13 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-echo "=== Setting up chezmoi dotfiles (before Determinate Nix + home-manager) ==="
+echo "=== Setting up chezmoi dotfiles ==="
 
 DOTFILE_REPOSITORY="https://github.com/aahsnr-configs/dots"
 
 # Apply the dotfiles into the system skeleton. New users (i.e. the deploy
-# user after rebasing) therefore start with the dotfiles already in place,
-# including ~/.config/home-manager which home-manager needs.
+# user after rebasing) therefore start with the dotfiles already in place.
 #
 # file-conflict-policy: replace  (from the recipe's chezmoi module config)
 HOME=/etc/skel \

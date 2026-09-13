@@ -36,16 +36,6 @@ update:
     echo "===== User Manuals ====="
     mandb --user-db || true
 
-    echo "===== Nix (self-upgrade, Determinate) ====="
-    run_if determinate-nixd sudo determinate-nixd upgrade
-
-    echo "===== home-manager ====="
-    if [[ -f "$HOME/.config/home-manager/flake.nix" ]] || [[ -f "$HOME/.config/home-manager/home.nix" ]]; then
-        home-manager switch -b backup --flake "$HOME/.config/home-manager" || true
-    else
-        echo "No home-manager config found at ~/.config/home-manager; skipping"
-    fi
-
     echo "===== hyprpm ====="
     run_if hyprpm hyprpm update
 

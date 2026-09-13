@@ -9,8 +9,7 @@ the display manager; the desktop is Hyprland from the `lionheartp/Hyprland`
 COPR.
 
 Everything needed at login is baked in at build time: applications, fonts,
-Flatpaks, chezmoi dotfiles, Determinate Nix, home-manager and the Homebrew
-packages.
+Flatpaks, chezmoi dotfiles and the Homebrew packages.
 
 ## What is baked in
 
@@ -27,8 +26,7 @@ packages.
 - **Homebrew**: atuin, bat, btop, bun, cava, chafa, direnv, dust, eza, fd,
   fzf, git, gh, git-lfs, gnuplot, lazygit, pandoc, pixi, ripgrep, starship,
   tealdeer, uv, yazi, zellij
-- **Dotfiles**: chezmoi (`aahsnr-configs/dots`) applied before Nix/HM
-- **Nix**: Determinate Nix + home-manager (baked, with first-login fallback)
+- **Dotfiles**: chezmoi (`aahsnr-configs/dots`) applied at build time
 - **Flatpaks**: system and user scope managed by a bash port of BlueBuild's
   `default-flatpaks@v2` module (`system-flatpak-setup.timer` /
   `user-flatpak-setup.timer`); the baked-in Flatpak list lives in

@@ -27,7 +27,7 @@ rm -rf /tmp/* || true
 find /var -mindepth 1 -maxdepth 1 -type d \! -name cache \! -name log -exec rm -rf {} +
 
 # Copy entries into /usr/lib/passwd and /usr/lib/group so that users created
-# during the build (nixbld*, the brew build user, ...) exist on the deployed
+# during the build (the brew build user, ...) exist on the deployed
 # system, where /etc is shared (and reset) across deployments.
 relocate_accounts() {
     local etc="$1" lib="$2" shadow="$3" keep="$4" reset="$5"
